@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance History - Mess Manager{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-4 pb-20">
+    <div class="max-w-2xl mx-auto">
+
+        <!-- Header -->
+        <div class="mb-6">
+            <a href="{% url 'mark_attendance' customer.customer_id %}"
+                class="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Back to Attendance
+            </a>
+
+            <div class="card">
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">Attendance History</h1>
+                <p class="text-gray-600">{{ customer.name }} ({{ customer.customer_id }})</p>
+            </div>
+        </div>
+
+        <!-- Subscription Status -->
+        <div class="card mb-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-600">Plan Type</p>
+                    <p class="text-lg font-semibold text-gray-800">{{ customer.get_plan_type_display }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Days Remaining</p>
+                    <p
+                        class="text-lg font-semibold {% if is_expiring_soon %}text-yellow-600{% else %}text-green-600{% endif %}">
+                        {{ days_remaining }} days
+                    </p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Start Date</p>
+                    <p class="text-lg font-semibold text-gray-800">{{ customer.start_date|date:"d M Y" }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">End Date</p>
+                    <p class="text-lg font-semibold text-gray-800">{{ customer.end_date|date:"d M Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Records -->
+        <div class="card">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">This Month's Attendance</h2>
+
+            {% if attendance_by_date %}
+            <div class="space-y-3">
+                {% for date, meals in attendance_by_date.items %}
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="font-semibold text-gray-800">{{ date|date:"d M Y" }}</p>
+                        <p class="text-sm text-gray-600">{{ date|date:"l" }}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        {% if 'LUNCH' in meals %}
+                        <span class="badge bg-yellow-100 text-yellow-800">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                                </path>
+                            </svg>
+                            Lunch
+                        </span>
+                        {% endif %}
+                        {% if 'DINNER' in meals %}
+                        <span class="badge bg-indigo-100 text-indigo-800">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                                </path>
+                            </svg>
+                            Dinner
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                    </path>
+                </svg>
+                <p class="text-gray-600">No attendance records for this month</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

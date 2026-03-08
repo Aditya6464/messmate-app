@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Report - Mess Manager Admin{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'admin_dashboard' %}" class="text-xl font-bold text-gray-800">Mess Manager Admin</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'admin_dashboard' %}" class="text-gray-700 hover:text-blue-600">Dashboard</a>
+                    <a href="{% url 'admin_customer_list' %}" class="text-gray-700 hover:text-blue-600">Customers</a>
+                    <a href="{% url 'admin_logout' %}" class="text-red-600 hover:text-red-700">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Header -->
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Attendance Reports</h1>
+
+        <!-- Filters -->
+        <div class="card mb-6">
+            <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                    <input type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                    <input type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Meal Type</label>
+                    <select name="meal_type"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                        <option value="">All Meals</option>
+                        <option value="LUNCH" {% if meal_type=='LUNCH' %}selected{% endif %}>Lunch</option>
+                        <option value="DINNER" {% if meal_type=='DINNER' %}selected{% endif %}>Dinner</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="w-full btn btn-primary">Filter</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="card bg-gradient-to-br from-blue-400 to-blue-500 text-white">
+                <p class="text-blue-100 text-sm font-medium">Total Attendance</p>
+                <p class="text-4xl font-bold mt-2">{{ total_attendance }}</p>
+            </div>
+            <div class="card bg-gradient-to-br from-yellow-400 to-yellow-500 text-white">
+                <p class="text-yellow-100 text-sm font-medium">Lunch Count</p>
+                <p class="text-4xl font-bold mt-2">{{ lunch_count }}</p>
+            </div>
+            <div class="card bg-gradient-to-br from-indigo-400 to-indigo-500 text-white">
+                <p class="text-indigo-100 text-sm font-medium">Dinner Count</p>
+                <p class="text-4xl font-bold mt-2">{{ dinner_count }}</p>
+            </div>
+        </div>
+
+        <!-- Export Button -->
+        <div class="mb-4">
+            <a href="{% url 'admin_export_csv' %}?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&meal_type={{ meal_type }}"
+                class="btn bg-green-500 text-white hover:bg-green-600">
+                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                    </path>
+                </svg>
+                Export to CSV
+            </a>
+        </div>
+
+        <!-- Attendance by Date -->
+        <div class="card">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Attendance by Date</h2>
+
+            {% if attendance_by_date %}
+            <div class="space-y-4">
+                {% for date, data in attendance_by_date.items %}
+                <div class="border-l-4 border-blue-500 pl-4 py-2 bg-gray-50 rounded">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <p class="font-semibold text-gray-800">{{ date|date:"d M Y" }}</p>
+                            <p class="text-sm text-gray-600">{{ date|date:"l" }}</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <span class="badge bg-yellow-100 text-yellow-800">Lunch: {{ data.lunch }}</span>
+                            <span class="badge bg-indigo-100 text-indigo-800">Dinner: {{ data.dinner }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Customer Details (collapsible) -->
+                    <details class="mt-2">
+                        <summary class="cursor-pointer text-sm text-blue-600 hover:text-blue-700">View Details</summary>
+                        <div class="mt-2 space-y-1">
+                            {% for attendance in data.records %}
+                            <p class="text-sm text-gray-700">
+                                {{ attendance.customer.name }} ({{ attendance.customer.customer_id }}) -
+                                <span class="font-medium">{{ attendance.get_meal_type_display }}</span> -
+                                {{ attendance.marked_at|time:"g:i A" }}
+                            </p>
+                            {% endfor %}
+                        </div>
+                    </details>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <p class="text-gray-600">No attendance records found for the selected period</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

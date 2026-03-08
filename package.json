@@ -1,0 +1,11 @@
+{
+    "name": "mess-manager",
+    "version": "1.0.0",
+    "description": "Monthly Mess Management System",
+    "scripts": {
+        "build:css": "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify"
+    },
+    "devDependencies": {
+        "tailwindcss": "^3.4.0"
+    }
+}

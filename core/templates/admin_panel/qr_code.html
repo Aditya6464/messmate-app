@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment QR Code - Mess Manager Admin{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'admin_dashboard' %}" class="text-xl font-bold text-gray-800">Mess Manager Admin</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'admin_customer_list' %}" class="text-gray-700 hover:text-blue-600">Customers</a>
+                    <a href="{% url 'admin_logout' %}" class="text-red-600 hover:text-red-700">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Header -->
+        <div class="mb-6">
+            <a href="{% url 'admin_customer_list' %}"
+                class="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Back to Customers
+            </a>
+            <h1 class="text-2xl font-bold text-gray-800">Payment QR Code</h1>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="card mb-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-600">Customer Name</p>
+                    <p class="text-lg font-semibold text-gray-800">{{ customer.name }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Customer ID</p>
+                    <p class="text-lg font-semibold text-gray-800">{{ customer.customer_id }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Plan Type</p>
+                    <p class="text-lg font-semibold text-gray-800">{{ customer.get_plan_type_display }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Amount</p>
+                    <p class="text-lg font-semibold text-green-600">₹{{ amount }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="card text-center">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">UPI Payment QR Code</h2>
+            <div class="inline-block p-6 bg-white border-4 border-gray-200 rounded-lg">
+                <img src="{{ qr_url }}" alt="Payment QR Code" class="w-64 h-64 mx-auto">
+            </div>
+            <p class="mt-4 text-gray-600">Scan to pay ₹{{ amount }}</p>
+
+            <!-- Actions -->
+            <div class="mt-6 space-x-4">
+                <form method="post" action="{% url 'admin_send_qr' customer.pk %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        Send via WhatsApp
+                    </button>
+                </form>
+                <a href="{{ qr_url }}" download="qr_{{ customer.customer_id }}.png"
+                    class="btn bg-green-500 text-white hover:bg-green-600">
+                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Download
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Monthly Mess Management System">
+    <title>{% block title %}Mess Manager{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#8B5CF6',
+                        success: '#10B981',
+                        danger: '#EF4444',
+                        warning: '#F59E0B',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .btn {
+            @apply px-6 py-3 rounded-lg font-medium transition-all duration-200 transform active:scale-95;
+        }
+        
+        .btn-primary {
+            @apply bg-blue-500 text-white hover:bg-blue-600 shadow-lg hover:shadow-xl;
+        }
+        
+        .btn-success {
+            @apply bg-green-500 text-white hover:bg-green-600 shadow-lg hover:shadow-xl;
+        }
+        
+        .btn-danger {
+            @apply bg-red-500 text-white hover:bg-red-600 shadow-lg hover:shadow-xl;
+        }
+        
+        .btn-disabled {
+            @apply bg-gray-300 text-gray-500 cursor-not-allowed opacity-60;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-lg p-6;
+        }
+        
+        .badge {
+            @apply inline-block px-3 py-1 rounded-full text-sm font-medium;
+        }
+        
+        .badge-success {
+            @apply bg-green-100 text-green-800;
+        }
+        
+        .badge-warning {
+            @apply bg-yellow-100 text-yellow-800;
+        }
+        
+        .badge-danger {
+            @apply bg-red-100 text-red-800;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+    
+    {% block content %}{% endblock %}
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
